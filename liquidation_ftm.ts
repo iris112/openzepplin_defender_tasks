@@ -76,6 +76,8 @@ const parseUsers = (payload, prices) => {
     user.collateralReserve.forEach((collateralReserve, i) => {
       var priceInEth = prices[collateralReserve.reserve.symbol];
       var principalATokenBalance = collateralReserve.currentATokenBalance
+      if (collateralReserve.reserve.baseLTVasCollateral == 0)
+        return;
       totalCollateralThreshold += priceInEth * principalATokenBalance * (collateralReserve.reserve.reserveLiquidationThreshold / 10000) / (10 ** collateralReserve.reserve.decimals)
       if (collateralReserve.reserve.reserveLiquidationBonus > max_collateralBonus) {
         max_collateralSymbol = collateralReserve.reserve.symbol
@@ -133,6 +135,7 @@ const fetchUnhealthyLoans = async (signer, process?, user_id?) => {
               currentATokenBalance
               reserve{
                 usageAsCollateralEnabled
+                baseLTVasCollateral
                 reserveLiquidationThreshold
                 reserveLiquidationBonus
                 borrowingEnabled
