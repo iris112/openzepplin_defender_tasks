@@ -114,7 +114,7 @@ const checkUnderCollateralized = async (assetAddress: string, borrowAmount: BigN
 
   console.log("borrowablePrice: ", borrowablePrice.div(10 ** 8).toString(), '$')
   console.log("totalDebt: ", totalDebtPrice.div(10 ** 8).toString(), '$')
-  if (borrowablePrice.gt(totalDebtPrice))
+  if (totalDebtPrice.gt(borrowablePrice))
     return true;
   
   return false;
@@ -132,7 +132,7 @@ export async function handler(payload) {
   for(const reason of withdrawReasons) {
     if (await checkLargestDepositCondition(reason.params.reserve, BigNumber.from(reason.params.amount))) {
       matches.push({
-        txHash: evt.hash,
+        hash: evt.hash,
         metadata: {
          "Condition": "BiggerThanLargestDepositAmount",
          "Details" : {
@@ -152,7 +152,7 @@ export async function handler(payload) {
   for(const reason of borrowReasons) {
     if (await checkUnderCollateralized(reason.params.reserve, BigNumber.from(reason.params.amount), reason.params.onBehalfOf)) {
       matches.push({
-        txHash: evt.hash,
+        hash: evt.hash,
         metadata: {
          "Condition": "BorrowUnderCollateralized",
          "Details" : {
